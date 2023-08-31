@@ -35,8 +35,9 @@
 |---|---|---|
 
 ## Installation
-
-> [Include a step-by-step procedure on how to get your code installed. Be sure to include any third-party dependencies that need to be installed separately]
+- Needs a cert & key pem
+  - Needs permission to listen on 443
+  - CANNOT BE SELF-SIGNED, try https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
 
 ## Getting Started
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+   "ZoomWebhookToLog/internal/args"
    "ZoomWebhookToLog/internal/auth"
    "ZoomWebhookToLog/internal/logclient"
    "ZoomWebhookToLog/internal/model"
@@ -17,12 +18,14 @@ import (
 )
 
 func main() {
+   // MUST go first
+   args.NewArgs()
+
    local := true
    logClient := logclient.NewLogClient()
 
    // Periodically call flush
-   // TODO What should the duration be?
-   ticker := time.NewTicker(500 * time.Millisecond)
+   ticker := time.NewTicker(time.Duration(args.Args.GetFlushInterval()) * time.Millisecond)
    done := make(chan bool)
    go func() {
       for {
@@ -53,15 +56,19 @@ func main() {
       }
 
       // Authenticate inbound webhook
-      auth, err := auth.NewAuth(request, zoomEvent)
-      if err != nil {
-         slog.Error("Authentication error: ", err)
-      }
+      auth := auth.NewAuth(request, zoomEvent)
 
       fmt.Println(body)
 
       if strings.Contains(strings.ToLower(zoomEvent.Event), `endpoint.url_validation`) {
          auth.Validate(request, zoomEvent, responseWriter)
+         return
+      }
+
+      err = auth.VerifyEvent(request, zoomEvent, string(body))
+      if err != nil {
+         slog.Error("Error verifying webhook event", "error", err, "event", zoomEvent)
+         responseWriter.WriteHeader(401)
          return
       }
 
@@ -75,7 +82,7 @@ func main() {
 
    // Start the http server
    if local {
-      log.Fatal(http.ListenAndServe(":8080", nil))
+      log.Fatal(http.ListenAndServeTLS(":"+args.Args.GetPort(), args.Args.GetCertFile(), args.Args.GetKeyFile(), nil))
    } else {
       lambda.Start(httpadapter.New(http.DefaultServeMux).ProxyWithContext)
    }
