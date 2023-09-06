@@ -42,7 +42,7 @@ func (a *Auth) Validate(request *http.Request, event model.ZoomEvent, responseWr
       EncryptedToken: "",
    }
 
-   slog.Info("Validate", "event", event)
+   slog.Debug("Validate", "event", event)
    var err error
    vr.PlainToken = fmt.Sprintf("%v", event.Payload["plainToken"])
    // See https://github.com/zoom/webhook-sample/blob/2482d3c95ad1792688e9c771c493f910d200f656/index.js#L36
@@ -60,7 +60,7 @@ func (a *Auth) Validate(request *http.Request, event model.ZoomEvent, responseWr
    }
 
    responseWriter.Write(b)
-   slog.Info("Validate", "plainToken", vr.PlainToken, "secret", args.Args.GetZoomSecret(), "encryptedToken", vr.EncryptedToken)
+   slog.Debug("Validate", "plainToken", vr.PlainToken, "secret", args.Args.GetZoomSecret(), "encryptedToken", vr.EncryptedToken)
 }
 
 // VerifyEvent https://developers.zoom.us/docs/api/rest/webhook-reference/#verify-webhook-events
@@ -70,7 +70,7 @@ func (a *Auth) VerifyEvent(request *http.Request, event model.ZoomEvent, body st
       return nil
    }
 
-   slog.Info("VerifyEvent", "request", request, "event", event, "body", body)
+   slog.Debug("VerifyEvent", "request", request, "event", event, "body", body)
    ts := request.Header.Get("x-zm-request-timestamp")
    // const message = `v0:${req.headers['x-zm-request-timestamp']}:${JSON.stringify(req.body)}`
    // v0:{WEBHOOK_REQUEST_HEADER_X-ZM-REQUEST-TIMESTAMP_VALUE}:{WEBHOOK_REQUEST_BODY}

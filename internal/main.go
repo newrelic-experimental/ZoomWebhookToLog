@@ -84,6 +84,7 @@ func main() {
    if local {
       log.Fatal(http.ListenAndServeTLS(":"+args.Args.GetPort(), args.Args.GetCertFile(), args.Args.GetKeyFile(), nil))
    } else {
+      // TODO
       lambda.Start(httpadapter.New(http.DefaultServeMux).ProxyWithContext)
    }
 

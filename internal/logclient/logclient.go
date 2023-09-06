@@ -53,7 +53,7 @@ func (c *LogClient) Flush() {
       return
    }
 
-   slog.Info("Flush: enter")
+   slog.Debug("Flush: enter")
    //   defer c.mux.Unlock()
    c.mux.Lock()
 
@@ -63,7 +63,7 @@ func (c *LogClient) Flush() {
    c.mux.Unlock()
 
    c.writeBuffer(msg)
-   slog.Info("Flush: exit")
+   slog.Debug("Flush: exit")
 }
 
 func (c *LogClient) eventToLogMessage(event model.ZoomEvent) Logs {
@@ -103,7 +103,7 @@ func (c *LogClient) writeBuffer(msg *LogMessage) {
    if err != nil {
       slog.Error("Error marshaling json: %s", "error", err)
    }
-   slog.Info("Marshaled", "body", string(body))
+   slog.Debug("Marshaled", "body", string(body))
 
    // Compress the body
    var buf bytes.Buffer
@@ -132,6 +132,6 @@ func (c *LogClient) writeBuffer(msg *LogMessage) {
    if resp.StatusCode() >= 300 {
       slog.Error("Bad status code POSTing event", "status", resp.Status())
    } else {
-      slog.Info("Status code POSTing event", "status", resp.Status())
+      slog.Debug("Status code POSTing event", "status", resp.Status())
    }
 }
