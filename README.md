@@ -94,12 +94,12 @@ works
 
 ### Step 3: Zoom App Marketplace
 - Login to the [Zoom App Marketplace](https://marketplace.zoom.us/). You *must* have Developer permissions.
-- Pull down `Develop` in the top right corner and select `Build App` ![Alt text](./images/Zoom step 1.png)
-- Select `Create` under `Webhook Only` from `Choose your app type` ![Alt text](./images/Zoom step 2.png) (*NOTE:* if you do not have Developer permissions you will not be able to click this button)
-- Name your App in the `Create a Webhook app` dialog and press `Create` ![Alt text](./images/Zoom step 3.png)
+- Pull down `Develop` in the top right corner and select `Build App` ![Alt text](./images/Zoom-step-1.png)
+- Select `Create` under `Webhook Only` from `Choose your app type` ![Alt text](./images/Zoom-step-2.png) (*NOTE:* if you do not have Developer permissions you will not be able to click this button)
+- Name your App in the `Create a Webhook app` dialog and press `Create` ![Alt text](./images/Zoom-step-3.png)
 - Fill-in the `Information` for the App, all fields are required
   - For `Privacy`, `Terms`, and `Support` you may link to the respective `.md` files in this repository 
-  - Press `Continue` ![Alt text](./images/Zoom step 4.png)
+  - Press `Continue` ![Alt text](./images/Zoom-step-4.png)
 - On the `Feature` tab *save the `Secret Token`!*
 
 ### Step 4: Finish configuring the app and start it
@@ -110,19 +110,19 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
 ```
 
 ### Step 5: Go back to Zoom and finish setting-up the Webhook App
-- From the `Feature` tab enable `Event Subsriptions` ![Alt text](images/Zoom step 5.1.png) 
+- From the `Feature` tab enable `Event Subsriptions` ![Alt text](images/Zoom-step-5.1.png) 
 - Fill in
   - Subscription name (optional)
   - Event notification endopoint URL (the web address of the webhook)
-- Click `Validate` ![Alt text](images/Zoom step 5.2.png)
-- Assuming everything is setup properly you can now `Add Events`. The comprehensive list Webhook Events is [here](https://developers.zoom.us/docs/api/) ![Alt text](images/Zoom step 5.3.png)
-- Select the Events you want to log and press `Done` ![Alt text](images/Zoom step 5.4.png)
+- Click `Validate` ![Alt text](images/Zoom-step-5.2.png)
+- Assuming everything is setup properly you can now `Add Events`. The comprehensive list Webhook Events is [here](https://developers.zoom.us/docs/api/) ![Alt text](images/Zoom-step-5.3.png)
+- Select the Events you want to log and press `Done` ![Alt text](images/Zoom-step-5.4.png)
 - Press `Save` and then `Continue` and your Webhook is activated ![Alt text](images/Zoom-step-5.5.png)
 
 ### Step 6: Go to New Relic and marvel at your Log data
 - [Login into One New Relic](https://one.newrelic.com)
-- Open `Query Your Data` ![Alt text](./images/nr1 step 1.png)
-- Query the data using NRQL ![Alt text](./images/nr1 step 2.png) 
+- Open `Query Your Data` ![Alt text](./images/nr1-step-1.png)
+- Query the data using NRQL ![Alt text](./images/nr1-step-2.png) 
   - `select * from Log where source = 'ZoomWebhook' since 1 week ago`
 
 ## TLS Certs
