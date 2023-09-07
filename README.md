@@ -117,9 +117,7 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
 - Click `Validate` ![Alt text](images/Zoom step 5.2.png)
 - Assuming everything is setup properly you can now `Add Events`. The comprehensive list Webhook Events is [here](https://developers.zoom.us/docs/api/) ![Alt text](images/Zoom step 5.3.png)
 - Select the Events you want to log and press `Done` ![Alt text](images/Zoom step 5.4.png)
-- Press `Save` and then `Continue` and your Webhook is activated
-
-![Alt text](images/Zoom-step-5.5.png "")
+- Press `Save` and then `Continue` and your Webhook is activated ![Alt text](images/Zoom-step-5.5.png "")
 
 ### Step 6: Go to New Relic and marvel at your Log data
 - [Login into One New Relic](https://one.newrelic.com)
