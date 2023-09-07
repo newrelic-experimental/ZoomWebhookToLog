@@ -7,18 +7,57 @@ Write Zoom Webhook Events to New Relic's Log API.
 ## Installation
 ### Prerequisites
 - Zoom Marketplace developer access
-- Zoom requires a HTTPS connection with a TLS certificate from Certificate Authority (CA), *NOT SELF-SIGNED* certificate. If you need help with this see below in [Development](#Development)
+- Zoom requires an HTTPS connection with a TLS certificate from Certificate Authority (CA), *NOT SELF-SIGNED* certificate. If you need help with this see below in [Development](#Development)
+- Docker installed and running on the target host
 
 ### Step 1: Install the app and get it ready to run
 [//]: # (TODO create GitHub Releases)
-- [For Windows or Linux download the latest release from GitHub](https://github.com/newrelic-experimental/ZoomWebhookToLog/releases), otherwise see [Building](#Building) below
 - Ensure you have CA certificates, [see Development](#Development) below
+- Build the Docker image 
+```dockerfile
+# syntax=docker/dockerfile:1
+
+# Step 1: Build the application from source
+FROM golang:1.21-alpine AS build-stage
+
+WORKDIR /build
+
+# The Go image does not include git, add it to Alpine
+RUN apk add git
+
+RUN git clone https://github.com/newrelic-experimental/ZoomWebhookToLog.git
+
+WORKDIR ZoomWebhookToLog
+
+# Install the application's Go dependencies
+RUN go mod download
+
+# Build the executable
+RUN GOARCH=amd64 GOOS=linux go build -o /zoomLogger internal/main.go
+
+# Step 2: Deploy the application binary into a lean image
+FROM alpine AS build-release-stage
+
+WORKDIR /
+
+COPY --from=build-stage /zoomLogger /zoomLogger
+
+# COPY certs in from a local location- for instance:
+# NOTE: if you use mount to add the certs symlinks that are not a sub directory will not work- this is a Dockerism
+COPY cert/privkey1.pem    ./key.pem
+COPY cert/fullchain1.pem  ./cert.pem
+
+
+# Neither ENTRYPOINT nor CMD support ENV variables so manually keep EXPOSE and "-Port" in-sync
+EXPOSE 443
+
+ENTRYPOINT ["/zoomLogger", "-Port", "443"]
+```
 - Prepare, but DO NOT run, the application to run as a detached process that can survive user logout. How to do this is beyond the scope of this document, here are some useful references:
   - [systemd on Linux] (http://tuxgraphics.org/npa/systemd-scripts/)
   - [User defined Service on Windows] (https://learn.microsoft.com/en-us/troubleshoot/windows-client/deployment/create-user-defined-service)
   - [Docker on Linux] (https://linux.how2shout.com/how-to-start-docker-container-automatically-on-boot-in-linux/)
 
-[//]: # (TODO Dockerfile)
 
 ## Step 2: Configuration
 Configuration with defaults is self-describing for this application:
@@ -52,7 +91,6 @@ File paths should be fully qualified to avoid problems. When using Bash,  relati
 bin/zoomProcessor -CertFile scratch/cert.pem  -IngestKey 1 -ZoomSecret 1 -KeyFile scratch/key.pem 
 ```
 works
-
 
 ### Step 3: Zoom App Marketplace
 - Login to the [Zoom App Marketplace](https://marketplace.zoom.us/). You *must* have Developer permissions.

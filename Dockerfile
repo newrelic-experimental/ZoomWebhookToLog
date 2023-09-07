@@ -26,8 +26,10 @@ WORKDIR /
 COPY --from=build-stage /zoomLogger /zoomLogger
 
 # COPY certs in from a local location
-COPY scratch/cert.pem .
-COPY scratch/key.pem .
+# NOTE: if you use mount to add the certs symlinks that are not a sub directory will not work- this is a Dockerism
+COPY cert/privkey1.pem    ./key.pem
+COPY cert/fullchain1.pem  ./cert.pem
+
 
 # Neither ENTRYPOINT nor CMD support ENV variables so manually keep EXPOSE and "-Port" in-sync
 EXPOSE 443
