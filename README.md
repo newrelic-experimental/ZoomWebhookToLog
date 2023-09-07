@@ -1,14 +1,19 @@
 <a href="https://opensource.newrelic.com/oss-category/#new-relic-experimental"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Experimental.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Experimental.png"><img alt="New Relic Open Source experimental project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Experimental.png"></picture></a>
 
+
 # Zoom Webhooks to New Relic Log API
 
 Write Zoom Webhook Events to New Relic's Log API. 
 
+
 ## Installation
+
+
 ### Prerequisites
 - Zoom Marketplace developer access
 - Zoom requires an HTTPS connection with a TLS certificate from Certificate Authority (CA), *NOT SELF-SIGNED* certificate. If you need help with this see below in [Development](#Development)
 - Docker installed and running on the target host
+
 
 ### Step 1: Install the app and get it ready to run
 [//]: # (TODO create GitHub Releases)
@@ -92,6 +97,7 @@ bin/zoomProcessor -CertFile scratch/cert.pem  -IngestKey 1 -ZoomSecret 1 -KeyFil
 ```
 works
 
+
 ### Step 3: Zoom App Marketplace
 - Login to the [Zoom App Marketplace](https://marketplace.zoom.us/). You *must* have Developer permissions.
 - Pull down `Develop` in the top right corner and select `Build App` ![Alt text](./images/Zoom-step-1.png)
@@ -102,6 +108,7 @@ works
   - Press `Continue` ![Alt text](./images/Zoom-step-4.png)
 - On the `Feature` tab *save the `Secret Token`!*
 
+
 ### Step 4: Finish configuring the app and start it
 - Add the `Secret Token` from _Step 3_ to the App's configuration
 - Start the application, opening the `EXPOSE` port to the outside world
@@ -109,15 +116,17 @@ works
 docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -ZoomSecret YOUR_ZOOM_SECRET -LogLevel info 
 ```
 
+
 ### Step 5: Go back to Zoom and finish setting-up the Webhook App
 - From the `Feature` tab enable `Event Subsriptions` ![Alt text](images/Zoom-step-5.1.png) 
 - Fill in
   - Subscription name (optional)
-  - Event notification endopoint URL (the web address of the webhook)
+  - Event notification endopoint URL (the web address of YOUR webhook)
 - Click `Validate` ![Alt text](images/Zoom-step-5.2.png)
-- Assuming everything is setup properly you can now `Add Events`. The comprehensive list Webhook Events is [here](https://developers.zoom.us/docs/api/) ![Alt text](images/Zoom-step-5.3.png)
+- Assuming everything is setup properly you can now `Add Events`. The comprehensive list of Webhook Events is [here](https://developers.zoom.us/docs/api/) ![Alt text](images/Zoom-step-5.3.png)
 - Select the Events you want to log and press `Done` ![Alt text](images/Zoom-step-5.4.png)
 - Press `Save` and then `Continue` and your Webhook is activated ![Alt text](images/Zoom-step-5.5.png)
+
 
 ### Step 6: Go to New Relic and marvel at your Log data
 - [Login into One New Relic](https://one.newrelic.com)
@@ -125,12 +134,15 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
 - Query the data using NRQL ![Alt text](./images/nr1-step-2.png) 
   - `select * from Log where source = 'ZoomWebhook' since 1 week ago`
 
+
 ## TLS Certs
 - Needs a cert & key pem
   - Needs permission to listen on 443
   - CANNOT BE SELF-SIGNED, try https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
 
+
 ## Troubleshooting
+
 
 ## Building
 [//]: # ( TODO test building from the release in a clean directory)
@@ -140,11 +152,13 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
 - cd into the Release directory
 - `go mod download`
 
+
 ### Executable file
 [See here](https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63) for a list of `GOOS` and `GOARCH` values. Requires `go 1.21`.
 ```bash
  GOOS=linux GOARCH=amd64 go build  -o bin/zoomProcessor  internal/main.go
  ```
+
 
 ## Development
 - [Let's Encrypt](https://letsencrypt.org/) is a good, free, CA to get around the _no self-signing_ problem
@@ -152,11 +166,13 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
 - [Zoom Webhook developer docs](https://developers.zoom.us/docs/api/rest/webhook-reference/)
 - [Zoom example Webhook](https://github.com/zoom/webhook-sample/) written in NodeJS
 
+
 ## Support
 
 New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
 
 We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
+
 
 ## Contributing
 
@@ -169,8 +185,8 @@ As noted in our [security policy](../../security/policy), New Relic is committed
 
 If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic).
 
+
 ## License
 
 This project is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
 
->[If applicable: [Project Name] also uses source code from third-party libraries. You can find full details on which libraries are used and the terms under which they are licensed in the third-party notices document.]
