@@ -27,6 +27,7 @@ COPY --from=build-stage /zoomLogger /zoomLogger
 
 # COPY certs in from a local location
 # NOTE: if you use mount to add the certs symlinks that are not a sub directory will not work- this is a Dockerism
+# Delete this if non-TLS
 COPY cert/privkey1.pem    ./key.pem
 COPY cert/fullchain1.pem  ./cert.pem
 

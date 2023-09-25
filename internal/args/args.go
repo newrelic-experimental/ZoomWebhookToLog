@@ -56,16 +56,55 @@ func NewArgs() {
    Args.ZoomSecret = flag.String(ZoomSecret, "", "Zoom webhook secret token from the Zoom Marketplace Add Feature page of this app")
    flag.Parse()
 
+   // Setup slog
+   if v, b := os.LookupEnv(LogLevel); b {
+      Args.LogApiEndpoint = &v
+   }
+   var programLevel = new(slog.LevelVar) // Info by default
+   h := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel})
+   slog.SetDefault(slog.New(h))
+   switch strings.ToLower(*Args.LogLevel) {
+   case "debug":
+      programLevel.Set(slog.LevelDebug)
+   case "info":
+      programLevel.Set(slog.LevelInfo)
+   case "error":
+      programLevel.Set(slog.LevelError)
+   case "warn":
+      programLevel.Set(slog.LevelWarn)
+   default:
+      programLevel.Set(slog.LevelInfo)
+   }
+
    // FIXME later
    runAsLambda := false
    Args.Lambda = &runAsLambda
 
-   if v, b := os.LookupEnv(CertFile); b {
-      Args.CertFile = &v
+   if v, b := os.LookupEnv(ZoomTLS); b {
+      l, err := strconv.ParseBool(v)
+      if err != nil {
+         log.Fatalf("Unable to parse ZoomTLS configuration value: %s %v", v, err)
+      }
+      Args.ZoomTLS = &l
    }
-   _, err := os.Stat(*Args.CertFile)
-   if err != nil {
-      log.Fatalf("Error reading CertFile: %s error: %v", *Args.CertFile, err)
+   slog.Info("Args init", "ZoomTLS", *Args.ZoomTLS)
+
+   if *Args.ZoomTLS {
+      if v, b := os.LookupEnv(CertFile); b {
+         Args.CertFile = &v
+      }
+      _, err := os.Stat(*Args.CertFile)
+      if err != nil {
+         log.Fatalf("Error reading CertFile: %s error: %v", *Args.CertFile, err)
+      }
+
+      if v, b := os.LookupEnv(KeyFile); b {
+         Args.KeyFile = &v
+      }
+      _, err = os.Stat(*Args.CertFile)
+      if err != nil {
+         log.Fatalf("Error reading KeyFile: %s error: %v", *Args.CertFile, err)
+      }
    }
 
    // Allow for environment variable overrides
@@ -95,14 +134,6 @@ func NewArgs() {
       log.Fatal("no IngestKey provided")
    }
 
-   if v, b := os.LookupEnv(KeyFile); b {
-      Args.KeyFile = &v
-   }
-   _, err = os.Stat(*Args.CertFile)
-   if err != nil {
-      log.Fatalf("Error reading KeyFile: %s error: %v", *Args.CertFile, err)
-   }
-
    if v, b := os.LookupEnv(Lambda); b {
       l, err := strconv.ParseBool(v)
       if err != nil {
@@ -112,10 +143,6 @@ func NewArgs() {
    }
 
    if v, b := os.LookupEnv(LogApiEndpoint); b {
-      Args.LogApiEndpoint = &v
-   }
-
-   if v, b := os.LookupEnv(LogLevel); b {
       Args.LogApiEndpoint = &v
    }
 
@@ -130,35 +157,9 @@ func NewArgs() {
       log.Fatal("no ZoomSecret found")
    }
 
-   if v, b := os.LookupEnv(ZoomTLS); b {
-      l, err := strconv.ParseBool(v)
-      if err != nil {
-         log.Fatalf("Unable to parse ZoomTLS configuration value: %s %v", v, err)
-      }
-      Args.ZoomTLS = &l
-   }
-
-   // Setup slog
-   var programLevel = new(slog.LevelVar) // Info by default
-   h := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel})
-   slog.SetDefault(slog.New(h))
-   switch strings.ToLower(*Args.LogLevel) {
-   case "debug":
-      programLevel.Set(slog.LevelDebug)
-   case "info":
-      programLevel.Set(slog.LevelInfo)
-   case "error":
-      programLevel.Set(slog.LevelError)
-   case "warn":
-      programLevel.Set(slog.LevelWarn)
-   default:
-      programLevel.Set(slog.LevelInfo)
-   }
-
    slog.Debug("flags", "os.Args", os.Args)
    slog.Debug("flag.Parsed", "parsed", flag.Parsed())
    slog.Debug("flags", "flags", flag.Args())
-
 }
 
 func (a *args) GetCertFile() string {
