@@ -32,6 +32,7 @@ COPY cert/fullchain1.pem  ./cert.pem
 
 
 # Neither ENTRYPOINT nor CMD support ENV variables so manually keep EXPOSE and "-Port" in-sync
+# Default it TLS
 EXPOSE 443
 
 ENTRYPOINT ["/zoomLogger", "-Port", "443"]

@@ -54,6 +54,7 @@ COPY cert/fullchain1.pem  ./cert.pem
 
 
 # Neither ENTRYPOINT nor CMD support ENV variables so manually keep EXPOSE and "-Port" in-sync
+# Default is TLS
 EXPOSE 443
 
 ENTRYPOINT ["/zoomLogger", "-Port", "443"]
@@ -87,6 +88,8 @@ Usage of zoomProcessor:
     	Port to listen on for inbound Webhook events (default "443")
   -ZoomSecret string
     	Zoom webhook secret token from the Zoom Marketplace Add Feature page of this app
+  -ZoomTLS
+    	Listen for Zoom Webhooks on TLS (default true)
 ```
 
 Configuration begins with command line arguments, which may then be overridden with environment variables.

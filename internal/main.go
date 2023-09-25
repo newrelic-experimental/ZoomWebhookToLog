@@ -21,7 +21,6 @@ func main() {
    // MUST go first
    args.NewArgs()
 
-   local := true
    logClient := logclient.NewLogClient()
 
    // Periodically call flush
@@ -81,11 +80,15 @@ func main() {
    })
 
    // Start the http server
-   if local {
-      log.Fatal(http.ListenAndServeTLS(":"+args.Args.GetPort(), args.Args.GetCertFile(), args.Args.GetKeyFile(), nil))
-   } else {
+   if args.Args.GetLambda() {
       // TODO
       lambda.Start(httpadapter.New(http.DefaultServeMux).ProxyWithContext)
+   } else {
+      if args.Args.GetZoomTLS() {
+         log.Fatal(http.ListenAndServeTLS(":"+args.Args.GetPort(), args.Args.GetCertFile(), args.Args.GetKeyFile(), nil))
+      } else {
+         log.Fatal(http.ListenAndServe(":"+args.Args.GetPort(), nil))
+      }
    }
 
    // Cleanup
