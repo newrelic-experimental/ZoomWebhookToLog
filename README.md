@@ -100,6 +100,7 @@ bin/zoomProcessor -CertFile scratch/cert.pem  -IngestKey 1 -ZoomSecret 1 -KeyFil
 ```
 works
 
+*_NOTE_*: All command line parameters can be overridden with `envvars`
 
 ### Step 3: Zoom App Marketplace
 - Login to the [Zoom App Marketplace](https://marketplace.zoom.us/). You *must* have Developer permissions.
@@ -145,7 +146,10 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
 
 
 ## Troubleshooting
-
+- Check the command line args `docker run -p 443:443/tcp zoom-logger -help`
+- Run the raw Go app `go build -o bin/mac-zoomProcessor  internal/main.go && bin/mac-zoomProcessor -ZoomTLS=false -IngestKey=1234 -ZoomSecret=1234`
+- Look at the Docker logs
+- Ensure Docker builds fresh `docker build  --no-cache --tag zoom-logger .`
 
 ## Building
 [//]: # ( TODO test building from the release in a clean directory)
