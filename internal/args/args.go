@@ -20,7 +20,7 @@ type args struct {
    LogLevel       *string
    Port           *string
    ZoomSecret     *string
-   ZoomTLS        *bool
+   NoZoomTLS      *bool
 }
 
 var Args *args
@@ -36,7 +36,7 @@ const (
    LogLevel       = "LogLevel"
    Port           = "Port"
    ZoomSecret     = "ZoomSecret"
-   ZoomTLS        = "ZoomTLS"
+   NoZoomTLS      = "NoZoomTLS"
 )
 
 func NewArgs() {
@@ -52,7 +52,7 @@ func NewArgs() {
    Args.LogApiEndpoint = flag.String(LogApiEndpoint, "https://log-api.newrelic.com/log/v1", "New Relic Log API HTTP endpoint ( https://docs.newrelic.com/docs/logs/log-api/introduction-log-api/#endpoint ) ")
    Args.LogLevel = flag.String(LogLevel, "info", "Golang slog log level: debug | info | warn | error")
    Args.Port = flag.String(Port, "443", "Port to listen on for inbound Webhook events")
-   Args.ZoomTLS = flag.Bool(ZoomTLS, true, "Listen for Zoom Webhooks on TLS")
+   Args.NoZoomTLS = flag.Bool(NoZoomTLS, false, "DO NOT listen for Zoom Webhooks on TLS")
    Args.ZoomSecret = flag.String(ZoomSecret, "", "Zoom webhook secret token from the Zoom Marketplace Add Feature page of this app")
    flag.Parse()
 
@@ -80,16 +80,16 @@ func NewArgs() {
    runAsLambda := false
    Args.Lambda = &runAsLambda
 
-   if v, b := os.LookupEnv(ZoomTLS); b {
+   if v, b := os.LookupEnv(NoZoomTLS); b {
       l, err := strconv.ParseBool(v)
       if err != nil {
          log.Fatalf("Unable to parse ZoomTLS configuration value: %s %v", v, err)
       }
-      Args.ZoomTLS = &l
+      Args.NoZoomTLS = &l
    }
-   slog.Info("Args init", "ZoomTLS", *Args.ZoomTLS)
+   slog.Debug("Args init", "NoZoomTLS", *Args.NoZoomTLS)
 
-   if *Args.ZoomTLS {
+   if !*Args.NoZoomTLS {
       if v, b := os.LookupEnv(CertFile); b {
          Args.CertFile = &v
       }
@@ -199,5 +199,5 @@ func (a *args) GetZoomSecret() string {
 }
 
 func (a *args) GetZoomTLS() bool {
-   return *a.ZoomTLS
+   return !*a.NoZoomTLS
 }

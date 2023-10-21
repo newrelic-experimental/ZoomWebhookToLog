@@ -67,9 +67,8 @@ ENTRYPOINT ["/zoomLogger", "-Port", "443"]
 
 ## Step 2: Configuration
 Configuration with defaults is self-describing for this application:
-```bash
-zoomProcessor -h
-Usage of zoomProcessor:
+```
+Usage of bin/mac-zoomProcessor:
   -CertFile string
     	Path to cert file (default "cert.pem")
   -FlushInterval int
@@ -84,15 +83,21 @@ Usage of zoomProcessor:
     	New Relic Log API HTTP endpoint ( https://docs.newrelic.com/docs/logs/log-api/introduction-log-api/#endpoint )  (default "https://log-api.newrelic.com/log/v1")
   -LogLevel string
     	Golang slog log level: debug | info | warn | error (default "info")
+  -NoZoomTLS
+    	DO NOT listen for Zoom Webhooks on TLS
   -Port string
     	Port to listen on for inbound Webhook events (default "443")
   -ZoomSecret string
     	Zoom webhook secret token from the Zoom Marketplace Add Feature page of this app
-  -ZoomTLS
-    	Listen for Zoom Webhooks on TLS (default true)
+
 ```
 
 Configuration begins with command line arguments, which may then be overridden with environment variables.
+
+_*NOTE*_: This program is written in Go and uses the Go `flag` package for command line argument processing. The Go philosophy for boolean command line flags is that they default to `false` and their _presence_ on the command line turns 
+them to `true`. If you want to _explicitly_ set a command line boolean [you must use an](https://pkg.go.dev/flag#hdr-Command_line_flag_syntax) `=` sign. For instance `-NoZoomTLS=true`, `-NoZoomTLS` *also* sets the flag to `true`.
+
+_*NOTE*_: As Zoom _requires_ a TLS connection this program defaults to the use of TLS and you must explicitly disable TLS with `-NoZoomTLS` if you plan on handling TLS in the network front-end.
 
 File paths should be fully qualified to avoid problems. When using Bash,  relative paths are relative to the `PWD` envvar when the application is started. For instance, if the application is in `./bin` and the certs are in `./scratch`
 ```bash
