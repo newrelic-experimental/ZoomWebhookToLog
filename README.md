@@ -18,7 +18,7 @@ Write Zoom Webhook Events to New Relic's Log API.
 ### Step 1: Install the app and get it ready to run
 [//]: # (TODO create GitHub Releases)
 - Ensure you have CA certificates, [see Development](#Development) below
-- Build the Docker image  ( `docker build  --tag zoom-logger .` ) using this `Dockerfile`
+- Build the Docker image  ( `docker build --no-cache --tag zoom-logger .` ) using this `Dockerfile`
 ```dockerfile
 # syntax=docker/dockerfile:1
 
@@ -149,6 +149,8 @@ docker run  -p 443:443/tcp zoom-logger   -IngestKey YOUR_NEW_RELIC_INGEST_KEY  -
   - Needs permission to listen on 443
   - CANNOT BE SELF-SIGNED, try https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
 
+## Health check endpoint
+The app provides a health check endpoint at `/healthcheck` which returns a 200 status code when the app is available.
 
 ## Troubleshooting
 - Check the command line args `docker run -p 443:443/tcp zoom-logger -help`

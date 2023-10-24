@@ -37,6 +37,12 @@ func main() {
       }
    }()
 
+   http.HandleFunc("/healthcheck", func(responseWriter http.ResponseWriter, request *http.Request) {
+      slog.Debug("healthcheck")
+      responseWriter.WriteHeader(200)
+      return
+   })
+
    // The Webhook handler
    http.HandleFunc("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 
@@ -51,7 +57,9 @@ func main() {
       zoomEvent := model.ZoomEvent{}
       err = json.Unmarshal(body, &zoomEvent)
       if err != nil {
-         log.Fatalln(err)
+         slog.Error("json unmarshal", "err", err)
+         responseWriter.WriteHeader(400)
+         return
       }
 
       // Authenticate inbound webhook
